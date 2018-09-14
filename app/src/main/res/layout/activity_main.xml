@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:id="@+id/scrollView3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
+
+        <LinearLayout
+            android:id="@+id/linearly"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_mobile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="管理员:" />
+
+            <Button
+                android:id="@+id/btn_visitor_enter"
+                style="@style/MainButton1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:height="80dp"
+                android:text="观众入场"
+                android:textColor="@android:color/white"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="151dp" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/vistor_ex_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btn_vip_reg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:height="80dp"
+                android:background="@drawable/btn_colored_material1"
+                android:text="VIP登记"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="137dp" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/vip_ex_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <Button
+                android:id="@+id/btn_activity_reg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:height="80dp"
+                android:background="@drawable/btn_colored_material2"
+                android:text="活动"
+                tools:layout_editor_absoluteX="71dp"
+                tools:layout_editor_absoluteY="137dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/multiple_actions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        fab:fab_addButtonColorNormal="@color/pink"
+        fab:fab_addButtonColorPressed="@color/pink_pressed"
+        fab:fab_addButtonIcon="@drawable/ic_float_menu_icon"
+        fab:fab_addButtonPlusIconColor="@android:color/holo_red_dark"
+        fab:fab_labelStyle="@style/menu_labels_style" >
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_update_app"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_fab_update_app"
+            fab:fab_size="mini"
+            fab:fab_title="更新程序"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_switch_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_fab_switch_user"
+            fab:fab_size="mini"
+            fab:fab_title="切换用户"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_exit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_fab_exit_app"
+            fab:fab_size="mini"
+            fab:fab_title="退出程序"/>
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
+</android.support.constraint.ConstraintLayout>

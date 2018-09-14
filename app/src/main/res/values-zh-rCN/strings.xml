@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">京湖青莲</string>
+    <string name="prompt_email">邮箱</string>
+    <string name="action_sign_in">登录或注册</string>
+    <string name="action_sign_in_short">登录</string>
+    <string name="prompt_phone">请输入手机号</string>
+    <string name="verification_code">获取验证码</string>
+    <string name="prompt_code">请输入4位验证码</string>
+
+    <string name="activity_title_name">京湖青莲展览现场系统</string>
+</resources>
