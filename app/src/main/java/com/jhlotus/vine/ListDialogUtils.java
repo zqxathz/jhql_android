@@ -19,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jhlotus.vine.util.Common;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -371,7 +373,8 @@ public class ListDialogUtils extends Dialog {
             try{
                 Response res = call2.execute();
                 String res_body = res.body().string();
-                Log.d("text:",res_body);
+                //Log.d("text:",res_body);
+                Common.showLogCompletion(res_body,200);
                 return res_body;
             }catch (IOException e){
                 return "";
@@ -408,7 +411,11 @@ public class ListDialogUtils extends Dialog {
                                     expo.setDate(jsonObject.getLong("start_time"),jsonObject.getLong("end_time"));
                                     expo.setPlace(jsonObject.getString("place"));
                                     list.add(expo);
-                                    adapter.notifyDataSetChanged();
+                                }
+                                adapter.notifyDataSetChanged();
+                                if (list.size()==0){
+                                    dismiss();
+                                    Toast.makeText(getContext(),"当前没有可用展会",Toast.LENGTH_SHORT).show();
                                 }
                                 break;
                             case R.id.btn_activity_reg:
@@ -422,7 +429,12 @@ public class ListDialogUtils extends Dialog {
                                     activity.setPlace(jsonObject.getString("expo_place"));
                                     activity.setExpo(jsonObject.getString("expo_name"));
                                     activity_list.add(activity);
-                                    activitys_adapter.notifyDataSetChanged();
+                                }
+                                activitys_adapter.notifyDataSetChanged();
+                                Log.d("当前活动数量",Integer.toString(activity_list.size()));
+                                if (activity_list.size()==0){
+                                    dismiss();
+                                    Toast.makeText(getContext(),"当前没有可用活动",Toast.LENGTH_SHORT).show();
                                 }
                         }
 
