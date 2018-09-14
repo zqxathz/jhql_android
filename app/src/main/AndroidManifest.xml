@@ -46,7 +46,8 @@
             android:name=".VipRegActivity"
             android:label="@string/activity_title_name" />
         <activity android:name=".VipRegNowActivity" />
-        <activity android:name=".ActivitysActivity"></activity>
+        <activity android:name=".ActivitysActivity"
+            android:label="@string/activity_title_name" ></activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
