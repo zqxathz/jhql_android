@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'key0'
+            keyPassword 'zqx119110'
+            storeFile file('D:/Develop/android/jhlotus/sign/key')
+            storePassword 'zqx119110'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.jhlotus.vine"
@@ -9,11 +17,13 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     lintOptions {
@@ -24,6 +34,8 @@ android {
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_7
         sourceCompatibility JavaVersion.VERSION_1_7
+    }
+    productFlavors {
     }
 }
 

@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.AddFloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.zxing.activity.CaptureActivity;
@@ -290,6 +291,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         update_timer = new Timer(false);
         update_timer.schedule(update_task,100,5*60*1000);
         //Update.getUpdate(this).checkupdate();
+
     }
 
     @Override

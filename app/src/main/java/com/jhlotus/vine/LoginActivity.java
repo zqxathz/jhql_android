@@ -415,7 +415,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             LoginActivity.this.runOnUiThread((new Runnable() {
                                 @Override
                                 public void run() {
-
                                     SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                                     SharedPreferences.Editor editor = sharedPreferences.edit();
                                     editor.putString("mobile",mPhoneView.getText().toString());
@@ -443,8 +442,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Headers headers = response.headers();
                 /*ApplicationData appdata = (ApplicationData)getApplication();
                 appdata.setToken(headers.values("__token__").toString());*/
-                Log.i("info_respons.headers",headers+"");
-                Log.i("info_res:",response.body().toString());
+                //Log.d("info_respons.headers",headers+"");
+                //Log.d("info_res:",response.body().toString());
             }
         });
 
