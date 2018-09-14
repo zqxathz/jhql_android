@@ -150,19 +150,19 @@ public class Common {
         if(log.length() >showCount){
             String show = log.substring(0, showCount);
 //			System.out.println(show);
-            Log.i("TAG", show+"");
+            Log.d("TAG", show+"");
             if((log.length() - showCount)>showCount){//剩下的文本还是大于规定长度
                 String partLog = log.substring(showCount,log.length());
                 showLogCompletion(partLog, showCount);
             }else{
                 String surplusLog = log.substring(showCount, log.length());
 //				System.out.println(surplusLog);
-                Log.i("TAG", surplusLog+"");
+                Log.d("TAG", surplusLog+"");
             }
 
         }else{
 //			System.out.println(log);
-            Log.i("TAG", log+"");
+            Log.d("TAG", log+"");
         }
     }
 
