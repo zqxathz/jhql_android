@@ -96,8 +96,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (val==0){
                         AlertDialog.Builder builder  = new AlertDialog.Builder(MainActivity.this);
                         builder.setTitle("确认" ) ;
-                        builder.setMessage("这是一个简单消息框" ) ;
-                        builder.setPositiveButton("是" ,  null );
+                        builder.setMessage(data.getString("message") ) ;
+                        builder.setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
                         builder.show();
                     };
                     break;
@@ -408,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected String doInBackground(String... params) {
             ApplicationData appdata = (ApplicationData) ApplicationData.getMyApplication();
-            appdata.setMobile("18606829855");
+            //appdata.setMobile("18606829855");
 
             OkHttpClient client = new OkHttpClient();
             FormBody body = new FormBody.Builder()
@@ -416,7 +421,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .add("appclient","1")
                     .build();
             Request request = new Request.Builder()
-                    //.addHeader("cookie",appdata.getSession())
+                    .addHeader("cookie",appdata.getSession())
                     .url("https://www.jhlotus.com/crm/locale/getexlist")
                     .post(body)
                     .build();

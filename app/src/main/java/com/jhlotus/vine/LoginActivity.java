@@ -3,6 +3,7 @@ package com.jhlotus.vine;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.FragmentManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -29,6 +30,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -51,7 +53,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>,View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>,View.OnClickListener,AdminregFragment.OnFragmentInteractionListener {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -405,6 +407,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         }
                         String res = jsonObject1.getString("response");
                         final String msg = jsonObject1.getString("message");
+                        final String status= jsonObject1.optString("status","0");
 
                         if (res.equals("success") && (token != null || token.length()>0)){
                             //Log.i("token is:",token);
@@ -415,20 +418,35 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             LoginActivity.this.runOnUiThread((new Runnable() {
                                 @Override
                                 public void run() {
+                                    if (status.equals("isbaned")){
+                                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                    }
+                                    if (status.equals("notfindadmin")){
 
-                                    SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putString("mobile",mPhoneView.getText().toString());
-                                    editor.commit();
-                                    Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    intent.putExtra("mobile",mPhoneView.getText().toString());
-                                    startActivity(intent);
-                                    finish();
+                                        findViewById(R.id.login_form).setVisibility(View.GONE);
+                                        FragmentManager fm = getFragmentManager();
+                                        fm.beginTransaction()
+                                                .add(R.id.fladminreg,AdminregFragment.newInstance("",""))
+                                                //.addToBackStack(null)
+                                                .commit();
+                                        return;
+                                    }
+                                    if (msg.equals("ok")){
+                                        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putString("mobile",mPhoneView.getText().toString());
+                                        editor.commit();
+                                        Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                        intent.putExtra("mobile",mPhoneView.getText().toString());
+                                        startActivity(intent);
+                                        finish();
+                                    }
+
+
                                 }
                             }));
                         }else{
-
                             LoginActivity.this.runOnUiThread((new Runnable() {
                                 @Override
                                 public void run() {
@@ -634,6 +652,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Log.d("调试",uri.getHost());
+        if (uri.getHost().equals("back")){
+            findViewById(R.id.login_form).setVisibility(View.VISIBLE);
+        }
+        if (uri.getHost().equals("skip") || uri.getHost().equals("gomain")){
+            Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.putExtra("mobile",mPhoneView.getText().toString());
+            startActivity(intent);
+            finish();
+        }
+
     }
 
 

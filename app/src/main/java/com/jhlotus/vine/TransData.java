@@ -53,8 +53,8 @@ public class TransData extends AppCompatActivity {
         @Override
         public void run() {
             ApplicationData appdata = (ApplicationData) ApplicationData.getMyApplication();
-            String mo = "18606829855";
-            appdata.setMobile(mo);
+            //String mo = "18606829855";
+            //appdata.setMobile(mo);
 
             String mobile = appdata.getMobile();
             Log.d("mobile:" ,mobile);
@@ -82,7 +82,7 @@ public class TransData extends AppCompatActivity {
                 Call call2 = client.newCall(request);
                 Response res = call2.execute();
                 String res_body = res.body().string();
-                Log.d("body:",res_body);
+                //Log.d("body:",res_body);
                 JSONObject json  = new JSONObject(res_body);
                 String response = json.getString("response");
                 if (response.equals("success")){
@@ -93,7 +93,7 @@ public class TransData extends AppCompatActivity {
 
             }catch (Exception e){
                 data.putInt("value",0);
-                Log.i("error:",e.toString());
+                Log.d("error:",e.toString());
             }
 
             msg.setData(data);
