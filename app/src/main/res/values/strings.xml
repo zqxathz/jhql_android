@@ -18,4 +18,7 @@
     <string name="prompt_code">input sms code</string>
 
     <string name="activity_title_name">京湖青莲展览现场系统</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
