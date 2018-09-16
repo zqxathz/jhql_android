@@ -19,6 +19,7 @@ import android.os.CountDownTimer;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -31,10 +32,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,6 +62,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
+
+    private static int CurrSwitchMode =0;
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -131,6 +136,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
         mGetcodeView = (Button) findViewById(R.id.getcode);
         mGetcodeView.setOnClickListener(this);
+        findViewById(R.id.btn_login_switch).setOnClickListener(this);
 
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 
@@ -227,12 +233,128 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 break;
             case R.id.sign_in_button:
                 validatesmscode();
+                break;
+            case R.id.btn_login_switch:
+                if (CurrSwitchMode==0){
+                    switchLoginMode(1);
+                }else{
+                    switchLoginMode(0);
+                }
+                break;
+            case R.id.sign_in_button2:
+                loginwithpass();
+                break;
             default:
                 break;
         }
     }
 
+    private void loginwithpass(){
+        //应用全局数据
+        ApplicationData appdata = (ApplicationData)getApplication();
+        appdata.setMobile(mPhoneView.getText().toString());
 
+        EditText mPassView = findViewById(R.id.edit_password);
+        OkHttpClient client = new OkHttpClient();
+        FormBody body = new FormBody.Builder()
+                .add("mobile",appdata.getMobile())
+                .add("password",mPassView.getText().toString())
+                .add("__token__",appdata.getToken())
+                .add("appclient","1")
+                .build();
+        Request request = new Request.Builder()
+                .addHeader("X-Requested-With","XMLHttpRequest")
+                .addHeader("cookie",appdata.getSession())
+                .url("https://www.jhlotus.com/activity/reg/login")
+                .post(body)
+                .build();
+
+        Call call2 = client.newCall(request);
+        call2.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("info_call2fail", e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    //  Log.i("info_call2success",response.body().string());
+                    String str = response.body().string();
+                    try {
+                        JSONObject jsonObject1 = new JSONObject(str);
+
+                        String token = "";
+                        if (jsonObject1.has("newtoken")) {
+                            token = jsonObject1.getString("newtoken");
+                        }
+                        String res = jsonObject1.getString("response");
+                        final String msg = jsonObject1.getString("message");
+
+                        if (res.equals("success") && (token != null || token.length() > 0)) {
+                            //Log.i("token is:",token);
+                            ApplicationData appdata = (ApplicationData) getApplication();
+                            appdata.setToken(token);
+                            appdata.setMobile(mPhoneView.getText().toString());
+                            Log.d("mobile:", appdata.getMobile());
+                            LoginActivity.this.runOnUiThread((new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (msg.equals("ok")) {
+                                        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putString("login_model", Integer.toString(CurrSwitchMode));
+                                        editor.putString("mobile", mPhoneView.getText().toString());
+                                        editor.commit();
+                                        Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                        intent.putExtra("mobile", mPhoneView.getText().toString());
+                                        startActivity(intent);
+                                        finish();
+                                    }
+
+
+                                }
+                            }));
+                        } else {
+                            LoginActivity.this.runOnUiThread((new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                }
+                            }));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private void switchLoginMode(int mode){
+        CurrSwitchMode = mode;
+        Button btn_switch_mode = (Button) findViewById(R.id.btn_login_switch);
+        ((TextView)findViewById(R.id.code)).setText(null);
+        ((TextView)findViewById(R.id.edit_login_pass)).setText(null);
+        if (mode==0){
+            btn_switch_mode.setText("使用密码登录");
+            findViewById(R.id.til_login_pass).setVisibility(View.GONE);
+            findViewById(R.id.til_login_smscode).setVisibility(View.VISIBLE);
+            findViewById(R.id.getcode).setVisibility(View.VISIBLE);
+            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.sign_in_button2).setVisibility(View.GONE);
+        }else if(mode==1){
+            btn_switch_mode.setText("使用短信验证码登录");
+            findViewById(R.id.til_login_pass).setVisibility(View.VISIBLE);
+            findViewById(R.id.til_login_smscode).setVisibility(View.GONE);
+            findViewById(R.id.getcode).setVisibility(View.VISIBLE);
+            findViewById(R.id.getcode).setVisibility(View.GONE);
+            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+            findViewById(R.id.sign_in_button2).setVisibility(View.VISIBLE);
+
+        }
+    }
 
     private void getSession(){
         ApplicationData appdata = (ApplicationData)getApplication();
@@ -360,10 +482,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         e.printStackTrace();
                     }
                 }
-                Headers headers = response.headers();
+                //Headers headers = response.headers();
                 /*ApplicationData appdata = (ApplicationData)getApplication();
                 appdata.setToken(headers.values("__token__").toString());*/
-                Log.i("info_respons.headers",headers+"");
+                //Log.i("info_respons.headers",headers+"");
             }
         });
     }
@@ -420,6 +542,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 public void run() {
                                     if (status.equals("isbaned")){
                                         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                        return;
                                     }
                                     if (status.equals("notfindadmin")){
 
@@ -435,6 +558,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                                         SharedPreferences.Editor editor = sharedPreferences.edit();
                                         editor.putString("mobile",mPhoneView.getText().toString());
+                                        editor.putString("login_model",Integer.toString(CurrSwitchMode));
                                         editor.commit();
                                         Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -458,11 +582,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         e.printStackTrace();
                     }
                 }
-                Headers headers = response.headers();
+                //Headers headers = response.headers();
                 /*ApplicationData appdata = (ApplicationData)getApplication();
                 appdata.setToken(headers.values("__token__").toString());*/
-                Log.i("info_respons.headers",headers+"");
-                Log.i("info_res:",response.body().toString());
+                //Log.d("info_respons.headers",headers+"");
+               // Log.d("info_res:",response.body().toString());
             }
         });
 
@@ -560,8 +684,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+           // mAuthTask = new UserLoginTask(email, password);
+            //mAuthTask.execute((Void) null);
         }
     }
 

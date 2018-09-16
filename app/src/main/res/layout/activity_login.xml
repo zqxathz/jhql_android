@@ -84,6 +84,7 @@
                 android:text="@string/verification_code" />
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_login_smscode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -102,6 +103,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_login_pass"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -125,12 +127,22 @@
                 android:text="@string/action_sign_in_short"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/sign_in_button2"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_sign_in_short"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/btn_login_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
