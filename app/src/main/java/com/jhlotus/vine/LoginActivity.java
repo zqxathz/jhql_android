@@ -137,6 +137,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mGetcodeView = (Button) findViewById(R.id.getcode);
         mGetcodeView.setOnClickListener(this);
         findViewById(R.id.btn_login_switch).setOnClickListener(this);
+        findViewById(R.id.sign_in_button2).setOnClickListener(this);
 
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 
@@ -144,6 +145,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (result!=null){
             mPhoneView.setText(result);
         }
+        result = sharedPreferences.getString("login_model","0");
+
+        switchLoginMode(Integer.parseInt(result));
 
         findViewById(R.id.imgbtn_cleare_mobile).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,7 +258,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         ApplicationData appdata = (ApplicationData)getApplication();
         appdata.setMobile(mPhoneView.getText().toString());
 
-        EditText mPassView = findViewById(R.id.edit_password);
+        EditText mPassView = findViewById(R.id.edit_login_pass);
         OkHttpClient client = new OkHttpClient();
         FormBody body = new FormBody.Builder()
                 .add("mobile",appdata.getMobile())
@@ -278,9 +282,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                String str = response.body().string();
+                System.out.print(str);
                 if (response.isSuccessful()) {
                     //  Log.i("info_call2success",response.body().string());
-                    String str = response.body().string();
+
                     try {
                         JSONObject jsonObject1 = new JSONObject(str);
 
@@ -291,10 +297,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         String res = jsonObject1.getString("response");
                         final String msg = jsonObject1.getString("message");
 
-                        if (res.equals("success") && (token != null || token.length() > 0)) {
+                        if (res.equals("success")/* && (token != null || token.length() > 0)*/) {
                             //Log.i("token is:",token);
                             ApplicationData appdata = (ApplicationData) getApplication();
-                            appdata.setToken(token);
+                            //appdata.setToken(token);
                             appdata.setMobile(mPhoneView.getText().toString());
                             Log.d("mobile:", appdata.getMobile());
                             LoginActivity.this.runOnUiThread((new Runnable() {
@@ -312,8 +318,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                         startActivity(intent);
                                         finish();
                                     }
-
-
                                 }
                             }));
                         } else {
