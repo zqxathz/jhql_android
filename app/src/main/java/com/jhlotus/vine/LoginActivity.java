@@ -215,25 +215,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                  lastmobile = mPhoneView.getText().toString();
                  getSession();
                  //Toast.makeText(getApplicationContext(),mPhoneView.getText().toString(),Toast.LENGTH_SHORT).show();
-                 mGetcodeView.setEnabled(false);
-                 cdt = new CountDownTimer(60000, 1000) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        mGetcodeView.setText(millisUntilFinished/1000 + "秒");
-                    }
-                    @Override
-                    public void onFinish() {
-                        mGetcodeView.setEnabled(true);
-                        mGetcodeView.setText("重新获取验证码");
-                    }
 
-                };
-                cdt.start();
-                mCodeView.setText("");
-                mCodeView.setEnabled(true);
-                mCodeView.setFocusable(true);
-                mCodeView.setFocusableInTouchMode(true);
-                mCodeView.requestFocus();
                 break;
             case R.id.sign_in_button:
                 validatesmscode();
@@ -246,7 +228,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
                 break;
             case R.id.sign_in_button2:
-                loginwithpass();
+                getSession();
+                //loginwithpass();
                 break;
             default:
                 break;
@@ -405,7 +388,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             //Log.i("token is:",token);
                             final ApplicationData appdata = (ApplicationData)getApplication();
                             appdata.setToken(token);
-                            LoginActivity.this.getSmsCode(LoginActivity.this.mPhoneView.getText().toString());
+                            if(CurrSwitchMode==0){
+                                LoginActivity.this.getSmsCode(LoginActivity.this.mPhoneView.getText().toString());
+                            }else{
+                                LoginActivity.this.loginwithpass();
+                            }
+
                         }else{
                             LoginActivity.this.runOnUiThread((new Runnable() {
                                 @Override
@@ -473,6 +461,33 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             //Log.i("token is:",token);
                             ApplicationData appdata = (ApplicationData)getApplication();
                             appdata.setToken(token);
+
+                            LoginActivity.this.runOnUiThread((new Runnable() {
+                                @Override
+                                public void run() {
+                                    mGetcodeView.setEnabled(false);
+                                    cdt = new CountDownTimer(60000, 1000) {
+                                        @Override
+                                        public void onTick(long millisUntilFinished) {
+                                            mGetcodeView.setText(millisUntilFinished/1000 + "秒");
+                                        }
+                                        @Override
+                                        public void onFinish() {
+                                            mGetcodeView.setEnabled(true);
+                                            mGetcodeView.setText("重新获取验证码");
+                                        }
+
+                                    };
+                                    cdt.start();
+                                    mCodeView.setText("");
+                                    mCodeView.setEnabled(true);
+                                    mCodeView.setFocusable(true);
+                                    mCodeView.setFocusableInTouchMode(true);
+                                    mCodeView.requestFocus();
+                                }
+                            }));
+
+
 
                         }else{
                             LoginActivity.this.runOnUiThread((new Runnable() {

@@ -64,7 +64,10 @@ public class Update implements ForceExitCallBack {
         if (cretinAutoUpdateUtils==null){
             cretinAutoUpdateUtils = CretinAutoUpdateUtils.getInstance(context);
         }else{
+            cretinAutoUpdateUtils.destroy();
+            cretinAutoUpdateUtils = CretinAutoUpdateUtils.getInstance(context);
             cretinAutoUpdateUtils.setContext(context);
+
         }
 
         /*if (force){
@@ -76,6 +79,7 @@ public class Update implements ForceExitCallBack {
             cretinAutoUpdateUtils.saveArray(list);
 
         }*/
+        CretinAutoUpdateUtils.setRunning();
 
         cretinAutoUpdateUtils.check(this,false);
 
