@@ -218,6 +218,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 break;
             case R.id.sign_in_button:
+                showProgress(true);
                 validatesmscode();
                 break;
             case R.id.btn_login_switch:
@@ -228,6 +229,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
                 break;
             case R.id.sign_in_button2:
+                showProgress(true);
                 getSession();
                 //loginwithpass();
                 break;
@@ -237,6 +239,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void loginwithpass(){
+
         //应用全局数据
         ApplicationData appdata = (ApplicationData)getApplication();
         appdata.setMobile(mPhoneView.getText().toString());
@@ -261,6 +264,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.i("info_call2fail", e.toString());
+                LoginActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showProgress(false);
+                    }
+                });
             }
 
             @Override
@@ -308,6 +317,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 @Override
                                 public void run() {
                                     Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                    showProgress(false);
                                 }
                             }));
                         }
@@ -358,6 +368,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.i("info_call2fail",e.toString());
+                LoginActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showProgress(false);
+                    }
+                });
             }
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
@@ -399,12 +415,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 @Override
                                 public void run() {
                                     Toast.makeText(getApplicationContext(), "出错了,无法得到TOKEN", Toast.LENGTH_SHORT).show();
+                                    showProgress(false);
                                 }
                             }));
                         }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        LoginActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showProgress(false);
+                            }
+                        });
                     }
 
                     /*System.out.println(response);
@@ -532,6 +555,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.i("info_call2fail",e.toString());
+                LoginActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showProgress(false);
+                    }
+                });
+
             }
 
             @Override
@@ -559,21 +589,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             LoginActivity.this.runOnUiThread((new Runnable() {
                                 @Override
                                 public void run() {
+
                                     if (status.equals("isbaned")){
+                                        showProgress(false);
                                         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                                         return;
                                     }
                                     if (status.equals("notfindadmin")){
 
                                         findViewById(R.id.login_form).setVisibility(View.GONE);
+
+                                        mProgressView.setVisibility(View.GONE);
+                                        mProgressView.animate().setDuration(200).alpha(0).setListener(new AnimatorListenerAdapter() {
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                                mProgressView.setVisibility(View.GONE);
+                                            }
+                                        });
+
                                         FragmentManager fm = getFragmentManager();
                                         fm.beginTransaction()
                                                 .add(R.id.fladminreg,AdminregFragment.newInstance("",""))
                                                 //.addToBackStack(null)
                                                 .commit();
+
+
+
                                         return;
                                     }
                                     if (msg.equals("ok")){
+                                        //showProgress(false);
                                         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                                         SharedPreferences.Editor editor = sharedPreferences.edit();
                                         editor.putString("mobile",mPhoneView.getText().toString());
@@ -594,11 +639,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 @Override
                                 public void run() {
                                     Toast.makeText(getApplicationContext(),msg, Toast.LENGTH_SHORT).show();
+                                    showProgress(false);
                                 }
                             }));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        LoginActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showProgress(false);
+                            }
+                        });
                     }
                 }
                 //Headers headers = response.headers();
@@ -722,7 +774,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Shows the progress UI and hides the login form.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
+    public void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.

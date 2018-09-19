@@ -82,6 +82,9 @@ public class AdminregFragment extends Fragment implements View.OnClickListener{
         View vw = inflater.inflate(R.layout.fragment_adminreg, container, false);
         vw.findViewById(R.id.fragment_btn_skip).setOnClickListener(this);
         vw.findViewById(R.id.fragment_btn_ok).setOnClickListener(this);
+        vw.findViewById(R.id.edit_password).setFocusable(true);
+        vw.findViewById(R.id.edit_password).setFocusableInTouchMode(true);
+        vw.findViewById(R.id.edit_password).requestFocus();
         return vw;
     }
 
@@ -190,10 +193,19 @@ public class AdminregFragment extends Fragment implements View.OnClickListener{
     }
 
     public class task extends AsyncTask<String,Integer,String>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            /*LoginActivity lga = (LoginActivity)getActivity();
+            lga.showProgress(true);*/
+
+        }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            /*LoginActivity lga = (LoginActivity)getActivity();
+            lga.showProgress(false);*/
             if (s.equals("success")){
                 Toast.makeText(getActivity(),"密码创建成功",Toast.LENGTH_SHORT).show();
                 onButtonPressed(Uri.parse("login://gomain"));
