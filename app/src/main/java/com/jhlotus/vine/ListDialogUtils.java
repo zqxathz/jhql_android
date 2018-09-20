@@ -389,7 +389,7 @@ public class ListDialogUtils extends Dialog {
             super.onPostExecute(result);
             //WeiboDialogUtils.closeDialog(mDialogLoading);
             if(!TextUtils.isEmpty(result)){
-                findViewById(R.id.tv_wait2).setVisibility(View.INVISIBLE);
+                findViewById(R.id.tv_wait2).setVisibility(View.GONE);
                 try {
                     Object object = new JSONTokener(result).nextValue();
                     if (object instanceof JSONObject){
