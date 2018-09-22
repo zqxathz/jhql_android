@@ -1,5 +1,7 @@
 package com.jhlotus.vine;
 
+import android.util.Log;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -41,8 +43,10 @@ public class expolist {
         String pattern = "yyyy年M月d日";
         Date date1 = new Date((startmilSecond)*1000);
 
+
         Date date2 = new Date((endmilSecond)*1000);
         SimpleDateFormat format = new SimpleDateFormat(pattern);
+
         TimeZone timeZone = TimeZone.getTimeZone("GMT+8");
         format.setTimeZone(timeZone);
         this.date = format.format(date1)+"-"+format.format(date2);

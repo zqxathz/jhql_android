@@ -3,30 +3,43 @@ package com.jhlotus.vine;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.google.zxing.activity.CaptureActivity;
 import com.jhlotus.vine.util.Common;
 import com.jhlotus.vine.util.Constant;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -57,7 +70,20 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
                 this, R.layout.layout_log, data);
 
 
-        ((ListView) findViewById(R.id.lv_log)).setAdapter(adapter);
+        ListView lv_log = findViewById(R.id.lv_log);
+        lv_log.setAdapter(adapter);
+
+        lv_log.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String user_id;
+                int index = data.get(position).indexOf("\r\n");
+                user_id = data.get(position).substring(3,index);
+                showPopwindow(Integer.parseInt(user_id));
+                return false;
+            }
+        });
+
 
          new GetLogTasker().execute(bundle.getInt("id"));
 
@@ -65,6 +91,10 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void initview(){
+
+    }
+
+    private void initEvent(){
 
     }
 
@@ -281,4 +311,124 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
             }
         }
     }
+
+    private void showPopwindow(final int userid) {
+
+        // 利用layoutInflater获得View
+        //LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //View view = inflater.inflate(R.layout.layout_activity_logitem, null);
+
+        View view=LayoutInflater.from(this).inflate(R.layout.layout_activity_logitem, null, false);
+
+        // 下面是两种方法得到宽度和高度 getWindow().getDecorView().getWidth()
+
+        final PopupWindow window = new PopupWindow(view, WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT);
+
+        // 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
+        window.setFocusable(true);
+
+        // 实例化一个ColorDrawable颜色为半透明
+        ColorDrawable dw = new ColorDrawable(0xb0000000);
+        window.setBackgroundDrawable(dw);
+
+        // 设置popWindow的显示和消失动画
+        window.setAnimationStyle(R.style.mypopwindow_anim_style);
+        // 在底部显示
+        window.showAtLocation(ActivitysActivity.this.findViewById(R.id.lv_log), Gravity.BOTTOM, 0, 0);
+
+        // 这里检验popWindow里的button是否可以点击
+        Button first = (Button) view.findViewById(R.id.btn_setuser_block);
+        first.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+               setUserBlock(userid);
+               window.dismiss();
+            }
+        });
+
+        // popWindow消失监听方法
+        window.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                System.out.println("popWindow消失");
+            }
+        });
+
+    }
+
+    private void setUserBlock(int userid){
+        Log.d("debug","测试一下"+userid);
+        ApplicationData appdata = (ApplicationData)getApplication();
+        OkHttpClient client = new OkHttpClient();
+        FormBody body = new FormBody.Builder()
+                .add("mobilephone",appdata.getMobile())
+                .add("userid",Integer.toString(userid))
+                .add("activityid",Integer.toString(bundle.getInt("id")))
+                .add("appclient","1")
+                .build();
+        Request request = new Request.Builder()
+                .addHeader("X-Requested-With","XMLHttpRequest")
+                .addHeader("cookie",appdata.getSession())
+                .url("https://www.jhlotus.com/activity/user/setblock")
+                .post(body)
+                .build();
+
+        Call call2 = client.newCall(request);
+        call2.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("info_call2fail",e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.isSuccessful()){
+
+                    try {
+                        //Log.i("info_call2success",response.body().string());
+                        String str = response.body().string();
+                        JSONObject jsonObject = new JSONObject(str);
+                        String res = jsonObject.getString("response");
+                        final String msg = jsonObject.getString("message");
+
+                        if (res.equals("success")){
+                            ActivitysActivity.this.runOnUiThread((new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                    new GetLogTasker().execute(bundle.getInt("id"));
+
+                                }
+                            }));
+                        }else{
+                            ActivitysActivity.this.runOnUiThread((new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                }
+                            }));
+                        }
+                    } catch (JSONException e) {
+                        Log.d("出错",e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        });
+    }
+
+    /*private class BlockuserTasker extends AsyncTask<Integer,Integer,Integer>{
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+        }
+
+        @Override
+        protected Integer doInBackground(Integer... integers) {
+            return null;
+        }
+    }*/
 }

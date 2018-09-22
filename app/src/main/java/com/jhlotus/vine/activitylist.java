@@ -2,6 +2,7 @@ package com.jhlotus.vine;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class activitylist {
     private int id;
@@ -57,10 +58,14 @@ public class activitylist {
 
     public void setDate(long startmilSecond,long endmilSecond) {
         String pattern = "yyyy年M月d日";
-        Date date1 = new Date((startmilSecond+100000)*1000);
+        Date date1 = new Date((startmilSecond)*1000);
 
-        Date date2 = new Date((endmilSecond+100000)*1000);
+
+        Date date2 = new Date((endmilSecond)*1000);
         SimpleDateFormat format = new SimpleDateFormat(pattern);
+
+        TimeZone timeZone = TimeZone.getTimeZone("GMT+8");
+        format.setTimeZone(timeZone);
         this.date = format.format(date1)+"-"+format.format(date2);
     }
 }
