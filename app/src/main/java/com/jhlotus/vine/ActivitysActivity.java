@@ -166,11 +166,13 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
             super.onPostExecute(s);
             //data = (String[])s.toArray(new String[s.size()]);
             data.clear();
-            if (s.get(0)=="error"){
-                Common.showErrorDialog(ActivitysActivity.this,"网络错误,无法获取扫码记录");
-            }else if (s!=null){
-                data.addAll(s);
-                adapter.notifyDataSetChanged();
+            if (s!=null){
+                if (s.get(0)=="error"){
+                    Common.showErrorDialog(ActivitysActivity.this,"网络错误,无法获取扫码记录");
+                }else if (s!=null){
+                    data.addAll(s);
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
 
