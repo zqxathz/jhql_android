@@ -49,4 +49,13 @@
 
     </ListView>
 
+    <Button
+        android:id="@+id/btn_activity_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button1_background"
+        android:text="统计"
+        tools:layout_editor_absoluteX="278dp"
+        tools:layout_editor_absoluteY="49dp" />
+
 </android.support.constraint.ConstraintLayout>
