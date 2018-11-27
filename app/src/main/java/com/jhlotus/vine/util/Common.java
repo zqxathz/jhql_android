@@ -61,6 +61,53 @@ public class Common {
                 }).create().show();
     }
 
+    static public ArrayList<String> getActivityUserCount(int id,String session){
+       ArrayList<String> result = new ArrayList<>();
+       ApplicationData appdata = (ApplicationData) ApplicationData.getMyApplication();
+        FormBody body = new FormBody.Builder()
+                .add("mobile",appdata.getMobile())
+                .add("id",""+id)
+                .add("appclient","1")
+                .build();
+        OkHttpClient client = new OkHttpClient();
+        final Request request = new Request.Builder()
+                .addHeader("X-Requested-With","XMLHttpRequest")
+                .addHeader("cookie",session)
+                .post(body)
+                .url("https://www.jhlotus.com/activity/locale/getcount")
+                .build();
+        //通过client发起请求
+
+        try{
+            Response res = client.newCall(request).execute();
+            String http_result = res.body().string();
+
+            if (http_result.isEmpty()){
+                return null;
+            }
+
+
+            JSONObject jsonObject1 = new JSONObject(http_result);
+            result.add(jsonObject1.optString("count","0"));
+
+            JSONArray json_array = jsonObject1.getJSONArray("detail");
+
+            String log_str="";
+            for (int i = 0; i < json_array.length(); i++) {
+                JSONObject jsonObject = json_array.getJSONObject(i);
+                 log_str = jsonObject.optString("create_time","")+":"+jsonObject.optString("count","0");
+                result.add(log_str);
+            }
+            //throw new Exception("error");
+            return result;
+        }catch (Exception e){
+            Log.d("error",e.getMessage());
+            result.clear();
+            result.add("error");
+            return result;
+        }
+    }
+
     static public ArrayList<String> getActivityUser(int id,String session){
         ArrayList<String> result = new ArrayList<String>();
         ApplicationData appdata = (ApplicationData) ApplicationData.getMyApplication();

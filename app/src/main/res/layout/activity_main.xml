@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             fab:fab_icon="@drawable/ic_fab_update_app"
             fab:fab_size="mini"
-            fab:fab_title="更新程序"/>
+            fab:fab_title="更新软件"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_switch_user"
@@ -101,6 +101,14 @@
             fab:fab_icon="@drawable/ic_fab_switch_user"
             fab:fab_size="mini"
             fab:fab_title="切换用户"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_fab_exit_app"
+            fab:fab_size="mini"
+            fab:fab_title="下载软件"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_exit"

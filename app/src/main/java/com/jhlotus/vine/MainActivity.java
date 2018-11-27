@@ -381,6 +381,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_activity_reg:
                 dialogUtils.show();
                 break;
+            case R.id.fab_download:
+                break;
             case R.id.fab_exit:
                 finish();
                 break;

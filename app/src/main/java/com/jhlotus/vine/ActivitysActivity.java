@@ -24,10 +24,13 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.zxing.activity.CaptureActivity;
 import com.jhlotus.vine.util.Common;
 import com.jhlotus.vine.util.Constant;
@@ -66,6 +69,7 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
 
 
         findViewById(R.id.btn_activity_scancode).setOnClickListener(this);
+        findViewById(R.id.btn_activity_count).setOnClickListener(this);
         adapter = new ArrayAdapter<String>(
                 this, R.layout.layout_log, data);
 
@@ -105,6 +109,10 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
                 startQrCode();
                 //Toast.makeText(this,"测试一下"+bundle.get("name"),Toast.LENGTH_SHORT).show();
                 //new GetLogTasker().execute(bundle.getInt("id"));
+                //new ValidateUserTasker().execute("au0bb598535726aa47ed655b6f1de69af02");
+                break;
+            case R.id.btn_activity_count:
+                new GetCount().execute(bundle.getInt("id"));
                 break;
             default:break;
         }
@@ -180,6 +188,42 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+    private class GetCount extends  AsyncTask<Integer,Integer,ArrayList<String>>{
+        String session;
+        ArrayList<String> list;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ApplicationData appdata = (ApplicationData) ApplicationData.getMyApplication();
+            session = appdata.getSession();
+            list = new ArrayList<>();
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(Integer... params) {
+            int id = params[0];
+            list = Common.getActivityUserCount(id,session);
+            if (list==null){
+                return null;
+            }
+            return list;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> s) {
+            super.onPostExecute(s);
+            //data = (String[])s.toArray(new String[s.size()]);
+            if (s!=null){
+                if (s.get(0)=="error"){
+                    Common.showErrorDialog(ActivitysActivity.this,"网络错误,无法获取扫码记录");
+                }else if (s!=null){
+                    String[] array = (String[])s.toArray(new String[s.size()]);
+                    new AlertDialog.Builder(ActivitysActivity.this).setItems(array,null).create().show();
+                }
+            }
+        }
+    }
+
     private class GetLogTasker extends AsyncTask<Integer,Integer,ArrayList<String>>{
         String session;
         ArrayList<String> list;
@@ -218,7 +262,7 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
     }
 
     private class ValidateUserTasker extends AsyncTask<String,Integer,Integer>{
-        String code,session,message,mobile;
+        String code,session,message,mobile,img_url;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -235,7 +279,27 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
             }
 
             if (result==1){
-                new AlertDialog.Builder(ActivitysActivity.this)
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivitysActivity.this);
+                View view = LayoutInflater.from(ActivitysActivity.this).inflate(R.layout.dialog_activitys_prompt, null);
+                ImageView imgv = view.findViewById(R.id.dlg_imageview_goodimg);
+                TextView tv_goodname = view.findViewById(R.id.dlg_tv_good_name);
+                TextView tv_message = view.findViewById(R.id.dlg_tv_message);
+                tv_goodname.setText(message);
+                tv_message.setText("二维码核销成功,请发放实物");
+                Glide.with(ActivitysActivity.this).load(img_url).placeholder(R.drawable.place).into(imgv);
+
+                builder.setView(view).setTitle("提示")
+                        .setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                final Dialog dg = builder.create();
+                dg.show();
+
+               /* new AlertDialog.Builder(ActivitysActivity.this)
                         .setTitle("提示")
                         .setMessage("二维码核销成功,请发放实物券")
                         .setCancelable(false)
@@ -245,7 +309,7 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
                                 dialog.cancel();
                                 new GetLogTasker().execute(bundle.getInt("id"));
                             }
-                        }).create().show();
+                        }).create().show();*/
             }else{
                 if (!code.isEmpty()){
                     message = code+":"+message;
@@ -293,6 +357,8 @@ public class ActivitysActivity extends AppCompatActivity implements View.OnClick
                 JSONObject jsonObject = new JSONObject(http_result);
                 int response = jsonObject.optInt("response",0);
                 if (response==1){
+                    img_url = jsonObject.optString("message","");
+                    message = jsonObject.optString("message1","");
                     return  response;
                 }else{
                     message = jsonObject.optString("message","核销失败");
