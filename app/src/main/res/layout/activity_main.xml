@@ -106,7 +106,7 @@
             android:id="@+id/fab_download"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_icon="@drawable/ic_fab_exit_app"
+            fab:fab_icon="@drawable/ic_fab_download"
             fab:fab_size="mini"
             fab:fab_title="下载软件"/>
 
