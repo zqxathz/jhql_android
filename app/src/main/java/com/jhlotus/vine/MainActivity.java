@@ -250,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.fab_exit).setOnClickListener(this);
         findViewById(R.id.fab_switch_user).setOnClickListener(this);
         findViewById(R.id.fab_update_app).setOnClickListener(this);
+        findViewById(R.id.fab_download).setOnClickListener(this);
         findViewById(R.id.scrollView3).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -382,6 +383,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dialogUtils.show();
                 break;
             case R.id.fab_download:
+                Intent download_intent = new Intent(MainActivity.this , DownloadActivity.class);
+                startActivity(download_intent);
                 break;
             case R.id.fab_exit:
                 finish();
