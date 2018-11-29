@@ -154,6 +154,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             public void onClick(View v) {
                 mPhoneView.setText("");
 
+                SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("mobile", mPhoneView.getText().toString());
+                editor.commit();
+
                 if (cdt!=null) cdt.cancel();
                 mGetcodeView.setText("获取验证码");
                 mPhoneView.setFocusable(true);

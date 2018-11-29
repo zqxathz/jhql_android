@@ -20,9 +20,11 @@ public class DownloadActivity extends AppCompatActivity {
 
         WebSettings webSettings = wv.getSettings();
         //与js交互必须设置
+        String ua = webSettings.getUserAgentString();
         webSettings.setJavaScriptEnabled(true);
-        wv.loadUrl("file:///android_asset/html.html");
+        webSettings.setUserAgentString(ua+";app/jhlouts_sence");
         wv.addJavascriptInterface(this,"android");
+        wv.loadUrl("file:///android_asset/html.html");
 
 
         wv.loadUrl("https://www.jhlotus.com/other/index/download");
