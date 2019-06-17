@@ -101,11 +101,11 @@ public class ListDialogUtils extends Dialog {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         switch (btn_id){
             case R.id.btn_visitor_enter:
-                ((TextView) findViewById(R.id.tv_title)).setText("请选择展会");
+                /*((TextView) findViewById(R.id.tv_title)).setText("请选择展会");
                 list = new ArrayList<expolist>();
                 adapter = new ListAdapter();
                 mRecyclerView.setAdapter(adapter);
-                break;
+                break;*/
             case R.id.btn_vip_reg:
                 ((TextView) findViewById(R.id.tv_title)).setText("请选择展会");
                 list = new ArrayList<expolist>();
