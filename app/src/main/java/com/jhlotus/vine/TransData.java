@@ -69,7 +69,7 @@ public class TransData extends AppCompatActivity {
                     .add("appclient","1")
                     .build();
             Request request = new Request.Builder()
-                    //.addHeader("cookie",appdata.getSession())
+                    .addHeader("cookie",appdata.getSession())
                     .url("https://www.jhlotus.com/crm/locale/visitorenter")
                     .post(body)
                     .build();
